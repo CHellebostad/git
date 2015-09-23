@@ -14,6 +14,8 @@ import org.opencv.videoio.VideoCapture;
 
 public class VideoCap {
 
+    Mat img= new Mat();
+
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
@@ -23,6 +25,11 @@ public class VideoCap {
     VideoCap() {
         cap = new VideoCapture();
         cap.open(1);
+    }
+
+    public Image getOneFrame() {
+        cap.read(img);
+        return toBufferedImage(img);
     }
 
     public Image toBufferedImage(Mat m) {
@@ -37,6 +44,5 @@ public class VideoCap {
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
-
     }
 }
