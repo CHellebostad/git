@@ -1,14 +1,9 @@
 package sanntidvideo;
 
-import java.io.File;
-
 import net.sourceforge.tess4j.*;
 import java.util.*;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.util.Arrays;
-import jdk.nashorn.internal.ir.CatchNode;
 
 
 /**
