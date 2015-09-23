@@ -7,15 +7,23 @@ package sanntidvideo;
 
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import org.opencv.core.Core;
+import org.opencv.core.Mat;
 
 public class SanntidVideo extends JFrame {
 
     private JPanel contentPane;
-    static{System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
+
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
     /**
      * Launch the application.
      */
@@ -24,7 +32,7 @@ public class SanntidVideo extends JFrame {
             @Override
             public void run() {
                 try {
-                    MyFrame frame = new MyFrame();
+                    SanntidVideo frame = new SanntidVideo();
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -67,4 +75,5 @@ public class SanntidVideo extends JFrame {
             }
         }
     }
+
 }
