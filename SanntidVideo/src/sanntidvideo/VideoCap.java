@@ -12,9 +12,9 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
-public class VideoCap {
+public class VideoCap extends Thread {
 
-    Mat img= new Mat();
+    Mat img = new Mat();
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -22,9 +22,13 @@ public class VideoCap {
 
     VideoCapture cap;
 
+    @Override
+    public void run() {
+         new VideoCap();
+    }
+
     VideoCap() {
-        cap = new VideoCapture();
-        cap.open(1);
+ 
     }
 
     public Image getOneFrame() {
