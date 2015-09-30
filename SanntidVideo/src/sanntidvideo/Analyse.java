@@ -12,11 +12,12 @@ import java.util.Arrays;
 public class Analyse {
 
     private final ArrayList<String> splittedString = new ArrayList<>();
-    public final ArrayList<String> volumes = new ArrayList<>();
+    public final ArrayList<String> volumesString = new ArrayList<>();
     public final ArrayList<String> octavesString = new ArrayList<>();
     private final ArrayList<String> notesString = new ArrayList<>();
     public final ArrayList<Integer> octaves = new ArrayList<>();
     public final ArrayList<Integer> notes = new ArrayList<>();
+    public final ArrayList<Integer> volumes = new ArrayList<>();
     public final ArrayList<String> faultyNotes = new ArrayList<>();
     public int badNotes = 0;
     static String result;
@@ -29,13 +30,14 @@ public class Analyse {
         result = result.replace("\n", "").replace("\r", "");
         if (result == null ? lastResult != null : !result.equals(lastResult)) {
             splittedString.clear();
-            volumes.clear();
+            volumesString.clear();
             octavesString.clear();
             notes.clear();
             picToString();
             stringToNotes();
             noteStringToInt();
             octaveStringToInt();
+            volumeStringToInt();
         }
         lastResult = result;
     }
@@ -46,7 +48,8 @@ public class Analyse {
     }
 
     private void stringToNotes() {
-        for (Iterator<String> iterator = splittedString.iterator(); iterator.hasNext();) {
+        Iterator<String> iterator = splittedString.iterator();
+        while (iterator.hasNext()) {
             String string = iterator.next();
             String[] s = string.split("-");
             if (noteSwitch(s[2]) == 12) {
@@ -63,7 +66,7 @@ public class Analyse {
                 iterator.remove();
             }
             else if (s.length == 3) {
-                volumes.add(s[0]);
+                volumesString.add(s[0]);
                 octavesString.add(s[1]);
                 notesString.add(s[2]);
             }
@@ -83,6 +86,12 @@ public class Analyse {
     private void octaveStringToInt() {
         for (String s : octavesString) {
             octaves.add(Integer.parseInt(s));
+        }
+    }
+    
+    private void volumeStringToInt() {
+        for (String s : volumesString) {
+            volumes.add(Integer.parseInt(s));
         }
     }
 
@@ -116,7 +125,7 @@ public class Analyse {
         return (12);
     }
 
-    public ArrayList<String> getVolumes() {
+    public ArrayList<Integer> getVolumes() {
         return volumes;
     }
     public ArrayList<Integer> getOctaves() {
