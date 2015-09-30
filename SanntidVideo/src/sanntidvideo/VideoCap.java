@@ -30,8 +30,7 @@ public class VideoCap extends Thread {
 
     VideoCap() {
         cap = new VideoCapture();
-        cap.open(1);
-        
+        cap.open(0);
     }
 
     public Image getOneFrame() {
