@@ -5,7 +5,6 @@ import java.util.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
-
 /**
  *
  * @author Ivar
@@ -13,11 +12,12 @@ import java.util.Arrays;
 public class Analyse {
 
     private final ArrayList<String> splittedString = new ArrayList<>();
-    private final ArrayList<String> volumes = new ArrayList<>();
-    private final ArrayList<String> octaves = new ArrayList<>();
+    public final ArrayList<String> volumes = new ArrayList<>();
+    public final ArrayList<String> octavesString = new ArrayList<>();
     private final ArrayList<String> notesString = new ArrayList<>();
-    private final ArrayList<Integer> notes = new ArrayList<>();
-    private final ArrayList<String> faultyNotes = new ArrayList<>();
+    public final ArrayList<Integer> octaves = new ArrayList<>();
+    public final ArrayList<Integer> notes = new ArrayList<>();
+    public final ArrayList<String> faultyNotes = new ArrayList<>();
     public int badNotes = 0;
     static String result;
     static String lastResult;
@@ -30,11 +30,12 @@ public class Analyse {
         if (result == null ? lastResult != null : !result.equals(lastResult)) {
             splittedString.clear();
             volumes.clear();
-            octaves.clear();
+            octavesString.clear();
             notes.clear();
             picToString();
             stringToNotes();
-            stringToInt();
+            noteStringToInt();
+            octaveStringToInt();
         }
         lastResult = result;
     }
@@ -48,26 +49,23 @@ public class Analyse {
         for (Iterator<String> iterator = splittedString.iterator(); iterator.hasNext();) {
             String string = iterator.next();
             String[] s = string.split("-");
-            if (s.length == 3) {
-                // Remove the current element from the iterator and the list.
+            if (noteSwitch(s[2]) == 12) {
+                faultyNotes.add(string);
+                badNotes++;
+                iterator.remove();
+            } else if (Integer.parseInt(s[1]) < 0 || Integer.parseInt(s[1]) > 8) {
+                faultyNotes.add(string);
+                badNotes++;
+                iterator.remove();
+            } else if (Integer.parseInt(s[0]) < 0 || Integer.parseInt(s[0]) > 127) {
+                faultyNotes.add(string);
+                badNotes++;
+                iterator.remove();
+            }
+            else if (s.length == 3) {
                 volumes.add(s[0]);
-                octaves.add(s[1]);
+                octavesString.add(s[1]);
                 notesString.add(s[2]);
-            }
-            else if(noteSwitch(s[2]) == 12){
-                faultyNotes.add(string);
-                badNotes++;
-                iterator.remove();
-            }
-            else if(noteSwitch(s[1]) < 0 || noteSwitch(s[1]) > 8){
-                faultyNotes.add(string);
-                badNotes++;
-                iterator.remove();
-            }
-            else if(noteSwitch(s[0]) < 0 || noteSwitch(s[0]) > 127){
-                faultyNotes.add(string);
-                badNotes++;
-                iterator.remove();
             }
             else {
                 faultyNotes.add(string);
@@ -77,9 +75,14 @@ public class Analyse {
         }
     }
 
-    private void stringToInt() {
+    private void noteStringToInt() {
         for (String s : notesString) {
             notes.add(noteSwitch(s));
+        }
+    }
+    private void octaveStringToInt() {
+        for (String s : octavesString) {
+            octaves.add(Integer.parseInt(s));
         }
     }
 
@@ -111,5 +114,15 @@ public class Analyse {
                 return (11);
         }
         return (12);
+    }
+
+    public ArrayList<String> getVolumes() {
+        return volumes;
+    }
+    public ArrayList<Integer> getOctaves() {
+        return octaves;
+    }
+    public ArrayList<Integer> getNotes() {
+        return notes;
     }
 }
