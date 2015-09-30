@@ -20,15 +20,18 @@ public class VideoCap extends Thread {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    VideoCapture cap;
+     VideoCapture cap;
 
     @Override
     public void run() {
          new VideoCap();
+         
     }
 
     VideoCap() {
- 
+        cap = new VideoCapture();
+        cap.open(1);
+        
     }
 
     public Image getOneFrame() {
@@ -49,4 +52,5 @@ public class VideoCap extends Thread {
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
     }
+    
 }
