@@ -1,15 +1,14 @@
 package sanntidvideo;
 
-
-
-
-
-
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -37,8 +36,27 @@ public class GUi extends javax.swing.JFrame {
      */
     public GUi() {
         initComponents();
-        
+        connect();
+
     }
+
+    public void connect() {
+        try {
+            Socket send = new Socket("127.0.0.1", 4444);
+            if (send.isConnected()) {
+                System.out.println("Connected");
+            }
+//           PrintStream PS = new PrintStream(send.getOutputStream());
+//           PS.println("Hello");
+//           InputStreamReader ir = new InputStreamReader(send.getInputStream());
+//           BufferedReader BR = new BufferedReader(ir);
+//           String Message = BR.readLine();
+//           System.out.println(Message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -261,8 +279,8 @@ public class GUi extends javax.swing.JFrame {
         String filename = f.getAbsolutePath();
         jTextField_imagepath.setText(filename);
         // jPanel_image.drawImage(image,0,0,null);
-        ImageIcon icon=new ImageIcon(filename);
-        jLabel_image.setIcon(icon);      
+        ImageIcon icon = new ImageIcon(filename);
+        jLabel_image.setIcon(icon);
     }//GEN-LAST:event_jButton_attachActionPerformed
 
     private void jTextField_playingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_playingActionPerformed
@@ -272,7 +290,7 @@ public class GUi extends javax.swing.JFrame {
     private void jPanel2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel2KeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPanel2KeyPressed
-    
+
     private void jTextField_playingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField_playingKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_A) {
@@ -326,7 +344,7 @@ public class GUi extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
@@ -358,13 +376,16 @@ public class GUi extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+//        SerialTestArduino test = new SerialTestArduino();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
-                new GUi().setVisible(true);             
+                new GUi().setVisible(true);
             }
         });
+
     }
 
 
