@@ -20,7 +20,7 @@ public class Avspilling {
     public int fuckUp = 0;
 
     Midi midi = new Midi();
-    PulseWidthModulation pwm = new PulseWidthModulation();
+    Serial pwm = new Serial();
 
     public boolean RefreshArrays(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         octaves.clear();

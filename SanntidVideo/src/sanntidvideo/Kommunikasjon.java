@@ -49,6 +49,7 @@ public class Kommunikasjon {
         
         outputStream = sock.getOutputStream();
         inputStream = sock.getInputStream();
+        System.out.println("Server Executed");
     }
     
     public void test(){
@@ -56,13 +57,14 @@ public class Kommunikasjon {
     }
 
     public void sendVideo() throws IOException {
-        BufferedImage image = ImageIO.read(new File("pic1.jpg"));
-        bytearray = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", bytearray);
-        byte[] size = ByteBuffer.allocate(4).putInt(bytearray.size()).array();
-        outputStream.write(size);
-        outputStream.write(bytearray.toByteArray());
-        outputStream.flush();
+//        BufferedImage image = ImageIO.read(new File("pic1.jpg"));
+//        bytearray = new ByteArrayOutputStream();
+//        ImageIO.write(image, "jpg", bytearray);
+//        byte[] size = ByteBuffer.allocate(4).putInt(bytearray.size()).array();
+//        outputStream.write(size);
+//        outputStream.write(bytearray.toByteArray());
+//        outputStream.flush();
+        outputStream.write(43);
         
     }
 

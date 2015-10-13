@@ -25,7 +25,6 @@ public class VideoCap extends Thread {
     @Override
     public void run() {
          new VideoCap();
-         
     }
 
     VideoCap() {
@@ -33,9 +32,9 @@ public class VideoCap extends Thread {
         cap.open(0);
     }
 
-    public Image getOneFrame() {
+    public BufferedImage getOneFrame() {
         cap.read(img);
-        return toBufferedImage(img);
+        return (BufferedImage) toBufferedImage(img);
     }
 
     public Image toBufferedImage(Mat m) {
