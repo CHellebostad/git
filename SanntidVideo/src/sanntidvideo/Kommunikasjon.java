@@ -5,12 +5,14 @@
  */
 package sanntidvideo;
 
+import static com.sun.glass.ui.Application.run;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,18 +29,17 @@ import javax.imageio.ImageIO;
  *
  * @author Christian
  */
-public class Kommunikasjon {
+public class Kommunikasjon extends Thread {
 
     private ServerSocket server;
     private Socket sock;
     private OutputStream outputStream;
     InputStream inputStream;
-    BufferedOutputStream bos = null;
     ByteArrayOutputStream baos;
     VideoCap cap;
     BufferedImage img;
     InputStream input;
-    ObjectOutputStream oos;
+    OutputStream os;
 
     public Kommunikasjon() {
         cap = new VideoCap();
@@ -53,29 +54,21 @@ public class Kommunikasjon {
 //        }
     }
 
-    public void testSend() {
+    public void run() {
         try {
             server = new ServerSocket(25000);
             System.out.println("Server running: " + server.isBound());
-            baos = new ByteArrayOutputStream();
-            while (true) {
-                img = cap.getOneFrame();
-                sock = server.accept();
-                ImageIO.write(img, "jpg", sock.getOutputStream());
-                sock.close();
-            }
+            sock = server.accept();
+            img = cap.getOneFrame();
+            os = sock.getOutputStream();
+            
+            
+            
+//                ImageIO.write(img, "jpg", sock.getOutputStream());
+            //sock.close();
         } catch (IOException e) {
         }
         System.out.println("Server failed");
-    }
-
-    public void sendVideo() throws IOException {
-        bos = new BufferedOutputStream(sock.getOutputStream());
-        BufferedImage frame = cap.getOneFrame();
-        ImageIO.write(frame, "JPG", baos);
-        bos.write(baos.toByteArray());
-        bos.flush();
-
     }
 
     public void sendInt() {
