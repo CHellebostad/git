@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
  *
  * @author Christian
  */
-public class Kommunikasjon {
+public class Kommunikasjon extends Thread {
 
     ServerSocket server;
     Socket sock;
