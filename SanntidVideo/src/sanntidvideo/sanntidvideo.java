@@ -6,24 +6,22 @@
 package sanntidvideo;
 
 import java.io.IOException;
+import org.opencv.core.Core;
 
 /**
  *
  * @author Christian
  */
-public class sanntidvideo extends Thread{
-    
-    public static void main(String[] args) throws IOException{
-//        VideoCap capture = new VideoCap();
-//        capture.start();
-//        Avspilling avspilling = new Avspilling();
-//        Analyse analyse = new Analyse();
+public class sanntidvideo {
+
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    public static void main(String[] args) throws IOException {
+
         Kommunikasjon com = new Kommunikasjon();
-        try{
-        com.makeServer();
-        }catch(Exception e){}
-        while(true){
-        com.sendVideo();
-        }
+        com.testSend();
+
     }
 }
