@@ -21,7 +21,7 @@ public class sanntidvideo {
     public static void main(String[] args) throws IOException {
 
         Kommunikasjon com = new Kommunikasjon();
-        com.testSend();
+        com.start();
 
     }
 }
