@@ -6,6 +6,7 @@
 package sanntidvideo;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,8 +31,13 @@ public class Kommunikasjon extends Thread {
     OutputStream outputStream;
     InputStream inputStream;
     ByteArrayOutputStream bytearray;
+    BufferedOutputStream bos = null;
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    VideoCap cap;
+
     public void Kommunikasjon() throws Exception {
-        
+        cap = new VideoCap();
+        test();
 //        InputStreamReader IR = new InputStreamReader(sock.getInputStream());
 //        BufferedReader BR = new BufferedReader(IR);
 //        String Message = BR.readLine();
@@ -40,32 +46,46 @@ public class Kommunikasjon extends Thread {
 //            PrintStream PS = new PrintStream(sock.getOutputStream());
 //            PS.println("Message Recived");
 //        }
-        
+    }
 
+    public void makeServer() throws Exception {
+
+//        server = new ServerSocket(4444);
+//        sock = server.accept();
+//
+//        outputStream = sock.getOutputStream();
+//        inputStream = sock.getInputStream();
+//        System.out.println("Server Executed");
     }
-    public void makeServer() throws Exception{
-        server = new ServerSocket(4444);
-        sock = server.accept();
-        
-        outputStream = sock.getOutputStream();
-        inputStream = sock.getInputStream();
-        System.out.println("Server Executed");
-    }
-    
-    public void test(){
-        System.out.println();
+
+    public void test() throws Exception {
+        Socket socket = new Socket("localhost", 13085);
+        OutputStream outputStream = socket.getOutputStream();
+        while (true) {
+            BufferedImage image = cap.getOneFrame();
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", byteArrayOutputStream);
+
+            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+            outputStream.write(size);
+            outputStream.write(byteArrayOutputStream.toByteArray());
+            outputStream.flush();
+            System.out.println("Flushed: " + System.currentTimeMillis());
+
+            Thread.sleep(2000);
+            System.out.println("Closing: " + System.currentTimeMillis());
+            socket.close();
+        }
     }
 
     public void sendVideo() throws IOException {
-//        BufferedImage image = ImageIO.read(new File("pic1.jpg"));
-//        bytearray = new ByteArrayOutputStream();
-//        ImageIO.write(image, "jpg", bytearray);
-//        byte[] size = ByteBuffer.allocate(4).putInt(bytearray.size()).array();
-//        outputStream.write(size);
-//        outputStream.write(bytearray.toByteArray());
-//        outputStream.flush();
-        outputStream.write(43);
-        
+        bos = new BufferedOutputStream(sock.getOutputStream());
+        BufferedImage frame = cap.getOneFrame();
+        ImageIO.write(frame, "JPG", baos);
+        bos.write(baos.toByteArray());
+        bos.flush();
+
     }
 
     public void sendInt() {
