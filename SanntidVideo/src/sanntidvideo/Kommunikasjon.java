@@ -5,15 +5,20 @@
  */
 package sanntidvideo;
 
+import static com.sun.glass.ui.Application.run;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,16 +31,17 @@ import javax.imageio.ImageIO;
  */
 public class Kommunikasjon extends Thread {
 
-    ServerSocket server;
-    Socket sock;
-    OutputStream outputStream;
+    private ServerSocket server;
+    private Socket sock;
+    private OutputStream outputStream;
     InputStream inputStream;
-    ByteArrayOutputStream bytearray;
-    BufferedOutputStream bos = null;
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ByteArrayOutputStream baos;
     VideoCap cap;
+    BufferedImage img;
+    InputStream input;
+    OutputStream os;
 
-    public void Kommunikasjon() throws Exception {
+    public Kommunikasjon() {
         cap = new VideoCap();
 
 //        InputStreamReader IR = new InputStreamReader(sock.getInputStream());
@@ -58,44 +64,22 @@ public class Kommunikasjon extends Thread {
 //        System.out.println("Server Executed");
     }
 
-    public void test() throws Exception {
-        sock = new Socket("localhost", 13085);
-        outputStream = sock.getOutputStream();
-        BufferedImage image = cap.getOneFrame();
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", byteArrayOutputStream);
-
-        byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-        outputStream.write(size);
-        outputStream.write(byteArrayOutputStream.toByteArray());
-        outputStream.flush();
-        System.out.println("Flushed: " + System.currentTimeMillis());
-
-        Thread.sleep(2000);
-        System.out.println("Closing: " + System.currentTimeMillis());
-        sock.close();
-
-    }
-
-    public void sendVideo() throws IOException {
-        bos = new BufferedOutputStream(sock.getOutputStream());
-        BufferedImage frame = cap.getOneFrame();
-        ImageIO.write(frame, "JPG", baos);
-        bos.write(baos.toByteArray());
-        bos.flush();
-
-    }
-
-    public void sendInt() {
-
-    }
-
-    public void recievePicture() {
-
-    }
-
-    public void recieveBool() {
+    public void run() {
+        try {
+            server = new ServerSocket(25000);
+            System.out.println("Server running: " + server.isBound());
+            sock = server.accept();
+            img = cap.getOneFrame();
+            os = sock.getOutputStream();
+        
+            
+            
+//                ImageIO.write(img, "jpg", sock.getOutputStream());
+            //sock.close();
+        } catch (IOException e) {
+        }
+        System.out.println("Server failed");
 
     }
 }
