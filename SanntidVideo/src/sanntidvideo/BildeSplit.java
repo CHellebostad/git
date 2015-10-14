@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -32,9 +33,7 @@ public class BildeSplit {
                 gr.dispose();
             }
         }
-        for (int i = 0; i < imgs.length; i++) {            
-            bilder.add(imgs[i]);            
-        }
+        bilder.addAll(Arrays.asList(imgs));
         return bilder;
     }
     
