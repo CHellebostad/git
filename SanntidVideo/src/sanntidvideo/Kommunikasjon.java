@@ -37,7 +37,7 @@ public class Kommunikasjon extends Thread {
 
     public void Kommunikasjon() throws Exception {
         cap = new VideoCap();
-        test();
+
 //        InputStreamReader IR = new InputStreamReader(sock.getInputStream());
 //        BufferedReader BR = new BufferedReader(IR);
 //        String Message = BR.readLine();
@@ -59,24 +59,23 @@ public class Kommunikasjon extends Thread {
     }
 
     public void test() throws Exception {
-        Socket socket = new Socket("localhost", 13085);
-        OutputStream outputStream = socket.getOutputStream();
-        while (true) {
-            BufferedImage image = cap.getOneFrame();
+        sock = new Socket("localhost", 13085);
+        outputStream = sock.getOutputStream();
+        BufferedImage image = cap.getOneFrame();
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", byteArrayOutputStream);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", byteArrayOutputStream);
 
-            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-            outputStream.write(size);
-            outputStream.write(byteArrayOutputStream.toByteArray());
-            outputStream.flush();
-            System.out.println("Flushed: " + System.currentTimeMillis());
+        byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+        outputStream.write(size);
+        outputStream.write(byteArrayOutputStream.toByteArray());
+        outputStream.flush();
+        System.out.println("Flushed: " + System.currentTimeMillis());
 
-            Thread.sleep(2000);
-            System.out.println("Closing: " + System.currentTimeMillis());
-            socket.close();
-        }
+        Thread.sleep(2000);
+        System.out.println("Closing: " + System.currentTimeMillis());
+        sock.close();
+
     }
 
     public void sendVideo() throws IOException {
