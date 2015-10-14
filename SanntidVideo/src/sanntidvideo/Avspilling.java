@@ -75,6 +75,10 @@ public class Avspilling {
             fuckUp++;
         }
     }
+    
+    public void ConvertToPWM(){
+        
+    }
 
     public boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         if (a.size() == b.size() && a.size() == c.size()) {
