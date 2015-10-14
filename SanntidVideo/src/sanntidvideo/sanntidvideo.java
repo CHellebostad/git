@@ -30,7 +30,7 @@ public class sanntidvideo {
         //BufferedImage bildeTilSplitting = vc.getOneFrame();
         File bildeTilSplitting = new File("img3.jpg");
         
-        bilderTilAnalyse = bs.Split(bildeTilSplitting);
+       // bilderTilAnalyse = bs.Split(bildeTilSplitting);
 
             
             Thread t0 = new Thread(new Analyse(bilderTilAnalyse.get(0)));
