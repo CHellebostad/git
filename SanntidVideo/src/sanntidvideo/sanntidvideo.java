@@ -12,16 +12,17 @@ import org.opencv.core.Core;
  *
  * @author Christian
  */
-public class sanntidvideo {
+public class sanntidvideo{
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     public static void main(String[] args) throws IOException {
-
-        Kommunikasjon com = new Kommunikasjon();
-        com.start();
+        new Thread(new Kommunikasjon()).start();
+        
+        
+        
 
     }
 }
