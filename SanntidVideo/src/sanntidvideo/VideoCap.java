@@ -12,30 +12,24 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
-public class VideoCap extends Thread {
+public class VideoCap {
 
     Mat img = new Mat();
+    private final VideoCapture cap;
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-     VideoCapture cap;
-
-    @Override
-    public void run() {
-         new VideoCap();
-         
-    }
-
-    VideoCap() {
+    public VideoCap() {
         cap = new VideoCapture();
         cap.open(0);
+        System.out.println("Camera status: "+cap.isOpened());
     }
 
-    public Image getOneFrame() {
+    public BufferedImage getOneFrame() {
         cap.read(img);
-        return toBufferedImage(img);
+        return (BufferedImage) toBufferedImage(img);
     }
 
     public Image toBufferedImage(Mat m) {
@@ -51,5 +45,5 @@ public class VideoCap extends Thread {
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
     }
-    
+
 }

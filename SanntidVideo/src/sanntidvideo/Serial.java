@@ -5,6 +5,6 @@ package sanntidvideo;
  *
  * @author Ivar
  */
-public class PulseWidthModulation {
+public class Serial {
     
 }
