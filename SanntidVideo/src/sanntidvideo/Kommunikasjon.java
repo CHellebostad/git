@@ -5,25 +5,13 @@
  */
 package sanntidvideo;
 
-import static com.sun.glass.ui.Application.run;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -53,18 +41,7 @@ public class Kommunikasjon extends Thread {
 //            PS.println("Message Recived");
 //        }
     }
-
-    public void makeServer() throws Exception {
-
-//        server = new ServerSocket(4444);
-//        sock = server.accept();
-//
-//        outputStream = sock.getOutputStream();
-//        inputStream = sock.getInputStream();
-//        System.out.println("Server Executed");
-    }
-
-
+    
     public void run() {
         try {
             server = new ServerSocket(25000);
