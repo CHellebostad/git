@@ -9,7 +9,7 @@ import java.util.Arrays;
  *
  * @author Ivar
  */
-public class Analyse {
+public class Analyse implements Runnable {
 
     private final ArrayList<String> splittedString = new ArrayList<>();
     public final ArrayList<String> volumesString = new ArrayList<>();
@@ -22,9 +22,18 @@ public class Analyse {
     public int badNotes = 0;
     static String result;
     static String lastResult;
+    static BufferedImage image;
 
-    public void picToNotes(BufferedImage image) throws TesseractException {
-
+    Analyse(BufferedImage im) {
+        image=im;
+    }
+   
+    @Override
+    public void run() {
+        
+    }
+    
+    public void picToNotes() throws TesseractException {
         Tesseract instance = Tesseract.getInstance();
         result = instance.doOCR(image);
         result = result.replace("\n", "").replace("\r", "");
@@ -134,4 +143,6 @@ public class Analyse {
     public ArrayList<Integer> getNotes() {
         return notes;
     }
+
+    
 }
