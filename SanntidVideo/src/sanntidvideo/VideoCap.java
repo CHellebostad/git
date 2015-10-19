@@ -8,23 +8,44 @@ package sanntidvideo;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
-public class VideoCap {
+public class VideoCap implements Runnable {
 
     Mat img = new Mat();
     private final VideoCapture cap;
+    private BlockingQueue bq = null;
+    int i=0;
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    public VideoCap() {
+    public VideoCap(BlockingQueue queue) {
+        bq=queue;
         cap = new VideoCapture();
         cap.open(0);
         System.out.println("Camera status: "+cap.isOpened());
+    }
+    
+    @Override
+    public void run(){
+
+        while(true){
+        while(bq.isEmpty()==true){
+            cap.read(img);
+            try {
+                bq.put(toBufferedImage(img));
+            } catch (InterruptedException ex) {
+            System.out.println("Nothing to put in queue");
+            }
+        }
+        }
     }
 
     public BufferedImage getOneFrame() {
@@ -45,5 +66,6 @@ public class VideoCap {
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
     }
+    
 
 }
