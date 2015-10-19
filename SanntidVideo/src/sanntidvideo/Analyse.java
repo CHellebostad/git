@@ -2,7 +2,6 @@ package sanntidvideo;
 
 import com.aspose.ocr.ImageStream;
 import com.aspose.ocr.OcrEngine;
-import net.sourceforge.tess4j.*;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
