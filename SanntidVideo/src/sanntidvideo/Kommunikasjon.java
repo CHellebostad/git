@@ -33,7 +33,7 @@ public class Kommunikasjon implements Runnable {
     byte[] byteimg;
 
     public Kommunikasjon() {
-        cap = new VideoCap();
+      
     }
 
     public void run() {
