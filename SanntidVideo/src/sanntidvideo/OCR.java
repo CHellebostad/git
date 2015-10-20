@@ -30,6 +30,8 @@ public class OCR implements Runnable {
     ByteArrayOutputStream baos;
     InputStream is;
     BufferedImage image;
+    double millis1;
+    double millis2;
 
     private BlockingQueue bq = null;
 
@@ -44,6 +46,7 @@ public class OCR implements Runnable {
     @Override
     public void run() {
         while (true) {
+            millis1 = System.currentTimeMillis();
             try {
                 image = (BufferedImage) bq.take();
             } catch (InterruptedException ex) {
@@ -57,7 +60,9 @@ public class OCR implements Runnable {
             is = new ByteArrayInputStream(baos.toByteArray());
             ocr.setImage(ImageStream.fromStream(is, ImageStreamFormat.Png));
             if (ocr.process()) {
-                System.out.println("Thread nr: " + ThreadNr + "Resultat: " + ocr.getText());
+                System.out.println("Thread nr: " + ThreadNr + " Resultat: " + ocr.getText());
+                millis2 = System.currentTimeMillis();
+                System.out.println(millis2 - millis1+" ms");
             }
 
             try {
