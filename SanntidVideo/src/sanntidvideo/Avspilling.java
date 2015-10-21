@@ -2,6 +2,11 @@ package sanntidvideo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiUnavailableException;
 
 /**
  *
@@ -18,9 +23,20 @@ public class Avspilling {
     public ArrayList<Integer> midiToStop = new ArrayList<>();
     public ArrayList<Integer> midiToStart = new ArrayList<>();
     public int fuckUp = 0;
+    int channel = 1;
 
-    Midi midi = new Midi();
-    Serial pwm = new Serial();
+    private static MidiChannel[] channels;
+
+    static {
+        try {
+            Synthesizer synth = MidiSystem.getSynthesizer();
+            synth.open();
+            channels = synth.getChannels();
+        } catch (MidiUnavailableException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
 
     public boolean RefreshArrays(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         octaves.clear();
@@ -92,5 +108,23 @@ public class Avspilling {
             return (true);
         }
         return (false);
+    }
+
+    
+
+    public void StartNote(ArrayList<Integer> midiCode, ArrayList<Integer> volume) {
+        for (int i : midiCode) {
+            channels[channel].noteOn(midiCode.get(i), volume.get(i));
+        }
+    }
+
+    public void EndNote(ArrayList<Integer> midiCode) {
+        for (int i : midiCode) {
+            channels[channel].noteOff(midiCode.get(i));
+        }
+    }
+
+    public void EndAllNotes() {
+        channels[channel].allNotesOff();
     }
 }
