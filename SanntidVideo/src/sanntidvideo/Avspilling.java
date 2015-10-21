@@ -2,6 +2,11 @@ package sanntidvideo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiUnavailableException;
 
 /**
  *
@@ -18,17 +23,28 @@ public class Avspilling {
     public ArrayList<Integer> midiToStop = new ArrayList<>();
     public ArrayList<Integer> midiToStart = new ArrayList<>();
     public int fuckUp = 0;
+    int channel = 1;
 
-    Midi midi = new Midi();
-    Serial pwm = new Serial();
+    private static MidiChannel[] channels;
+
+    static {
+        try {
+            Synthesizer synth = MidiSystem.getSynthesizer();
+            synth.open();
+            channels = synth.getChannels();
+        } catch (MidiUnavailableException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
 
     public boolean RefreshArrays(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         octaves.clear();
         notes.clear();
         volumes.clear();
-        octaves = a;
-        notes = b;
-        volumes = c;
+        octaves = b;
+        notes = c;
+        volumes = a;
         return (true);
     }
 
@@ -75,10 +91,6 @@ public class Avspilling {
             fuckUp++;
         }
     }
-    
-    public void ConvertToPWM(){
-        
-    }
 
     public boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         if (a.size() == b.size() && a.size() == c.size()) {
@@ -92,5 +104,21 @@ public class Avspilling {
             return (true);
         }
         return (false);
+    }
+
+    public void StartNote() {
+        for (int i : midiToStart) {
+            channels[channel].noteOn(midiToStart.get(i), volumesToStart.get(i));
+        }
+    }
+
+    public void EndNote(ArrayList<Integer> midiCode) {
+        for (int i : midiCode) {
+            channels[channel].noteOff(midiCode.get(i));
+        }
+    }
+
+    public void EndAllNotes() {
+        channels[channel].allNotesOff();
     }
 }
