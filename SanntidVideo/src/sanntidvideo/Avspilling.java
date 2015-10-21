@@ -42,9 +42,9 @@ public class Avspilling {
         octaves.clear();
         notes.clear();
         volumes.clear();
-        octaves = a;
-        notes = b;
-        volumes = c;
+        octaves = b;
+        notes = c;
+        volumes = a;
         return (true);
     }
 
@@ -91,10 +91,6 @@ public class Avspilling {
             fuckUp++;
         }
     }
-    
-    public void ConvertToPWM(){
-        
-    }
 
     public boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         if (a.size() == b.size() && a.size() == c.size()) {
@@ -110,11 +106,9 @@ public class Avspilling {
         return (false);
     }
 
-    
-
-    public void StartNote(ArrayList<Integer> midiCode, ArrayList<Integer> volume) {
-        for (int i : midiCode) {
-            channels[channel].noteOn(midiCode.get(i), volume.get(i));
+    public void StartNote() {
+        for (int i : midiToStart) {
+            channels[channel].noteOn(midiToStart.get(i), volumesToStart.get(i));
         }
     }
 
