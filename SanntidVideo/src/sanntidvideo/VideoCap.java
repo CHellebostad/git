@@ -9,49 +9,47 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 
 public class VideoCap implements Runnable {
 
     Mat img = new Mat();
+    Mat imgGray = new Mat();
     private final VideoCapture cap;
     private BlockingQueue bq = null;
-    int i=0;
+    public boolean CLOSE;
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     public VideoCap(BlockingQueue queue) {
-        bq=queue;
+        bq = queue;
         cap = new VideoCapture();
         cap.open(0);
-        System.out.println("Camera status: "+cap.isOpened());
+        System.out.println(cap.get(CV_CAP_PROP_FRAME_WIDTH) + " " + cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+
+        System.out.println("Camera status: " + cap.isOpened());
+
     }
-    
+
     @Override
-    public void run(){
-
-        while(true){
-        while(bq.isEmpty()==true){
+    public void run() {
+        while (true) {
             cap.read(img);
-            try {
-                bq.put(toBufferedImage(img));
-            } catch (InterruptedException ex) {
-            System.out.println("Nothing to put in queue");
-            }
+            bq.offer(toBufferedImage(img));
         }
-        }
+        
+    }
+    public void close() {
+        cap.release();
     }
 
-    public BufferedImage getOneFrame() {
-        cap.read(img);
-        return (BufferedImage) toBufferedImage(img);
-    }
+    
 
     public Image toBufferedImage(Mat m) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
@@ -66,6 +64,4 @@ public class VideoCap implements Runnable {
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
     }
-    
-
 }

@@ -44,7 +44,6 @@ public class Kommunikasjon implements Runnable {
             while (true) {
                 sock = server.accept();
                 os = sock.getOutputStream();
-                img = cap.getOneFrame();
                 baos = new ByteArrayOutputStream();
 
                 ImageIO.write(img, "jpg", baos);

@@ -15,6 +15,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import org.opencv.core.Mat;
 
 /**
@@ -33,7 +36,11 @@ public class Main implements Runnable {
     private final BlockingQueue queue4 = new ArrayBlockingQueue(1, true);
     private final BlockingQueue queue5 = new ArrayBlockingQueue(1, true);
     private final BlockingQueue videoQueue = new ArrayBlockingQueue(1, true);
+    private BlockingQueue guiStream = new ArrayBlockingQueue(1, true);
+    public boolean startProcessing;
     public BufferedImage img;
+    public boolean CLOSE;
+    private VideoCap video;
     Thread t1;
     Thread t0;
     Thread t2;
@@ -42,19 +49,18 @@ public class Main implements Runnable {
     Thread t5;
     BildeSplit bs;
     Thread Cap;
-    
+    JLabel label;
+    JFrame frame;
+    ImageIcon imgIcon;
+    double startTime;
+    double endTime;
     static ArrayList<BufferedImage> bilderTilAnalyse = new ArrayList<>();
     static BufferedImage bildeTilSplitting;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
-        Thread start = new Thread(new Main());
-        start.start();
-
-    }
-
-    public Main() throws IOException, InterruptedException {
-        Cap = new Thread(new VideoCap(videoQueue));
-        
+    public Main(BlockingQueue queue) throws IOException, InterruptedException {
+        guiStream = queue;
+        video = new VideoCap(videoQueue);
+        Cap = new Thread(video);
         bs = new BildeSplit();
         t0 = new Thread(new OCR("1", queue0));
         t1 = new Thread(new OCR("2", queue1));
@@ -74,27 +80,33 @@ public class Main implements Runnable {
         t3.start();
         t4.start();
         t5.start();
+
+//        Laster inn bildet manuelt
         try {
-            img = ImageIO.read(new File("pic9.png"));
+            img = ImageIO.read(new File("pic11.png"));
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try {
-            bilderTilAnalyse = bs.Split(img);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         while (true) {
             try {
-                queue0.put(bilderTilAnalyse.get(0));
-                queue1.put(bilderTilAnalyse.get(1));
-                queue2.put(bilderTilAnalyse.get(2));
-                queue3.put(bilderTilAnalyse.get(3));
-                queue4.put(bilderTilAnalyse.get(4));
-                queue5.put(bilderTilAnalyse.get(5));
-
-            } catch (InterruptedException ex) {
+//                img = (BufferedImage) videoQueue.take();
+                bilderTilAnalyse = bs.Split(img);
+            } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            guiStream.offer(img);
+            startTime = System.currentTimeMillis();
+            if ((startTime - endTime) > 300) {
+                if (startProcessing) {
+                    queue0.offer(bilderTilAnalyse.get(0));
+                    queue1.offer(bilderTilAnalyse.get(1));
+                    queue2.offer(bilderTilAnalyse.get(2));
+                    queue3.offer(bilderTilAnalyse.get(3));
+                    queue4.offer(bilderTilAnalyse.get(4));
+                    queue5.offer(bilderTilAnalyse.get(5));
+                    endTime = System.currentTimeMillis();
+                }
             }
 
         }
@@ -112,6 +124,16 @@ public class Main implements Runnable {
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
+    }
+
+    public void setStartProcessing(boolean var) {
+        startProcessing = var;
+    }
+
+    public void setClosing() {
+        video.close();
+        CLOSE = true;
+
     }
 
 }
