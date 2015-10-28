@@ -40,7 +40,7 @@ public class Main implements Runnable {
     public boolean startProcessing;
     public BufferedImage img;
     public boolean CLOSE;
-    private VideoCap video;
+    private final VideoCap video;
     Thread t1;
     Thread t0;
     Thread t2;
