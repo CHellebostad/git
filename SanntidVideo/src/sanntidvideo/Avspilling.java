@@ -1,6 +1,5 @@
 package sanntidvideo;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ArrayList;
 import javax.sound.midi.MidiSystem;
@@ -38,17 +37,29 @@ public class Avspilling {
 
     }
 
-    public boolean RefreshArrays(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
+    public void MidiCycle(ArrayList<ArrayList<Integer>> ar) {
+        retireMidiCodes();
+        RefreshArrays(ar);
+        ConvertToMidiCodes();
+        MidiCodesToStop();
+        MidiCodesToStart();
+        EndNote();
+        StartNote();
+    }
+    
+    private void RefreshArrays(ArrayList<ArrayList<Integer>> ar) {
         octaves.clear();
         notes.clear();
         volumes.clear();
-        octaves = b;
-        notes = c;
-        volumes = a;
-        return (true);
+        for (ArrayList<Integer> arr : ar) {
+            volumes.add(arr.get(0));
+            octaves.add(arr.get(1));
+            notes.add(arr.get(2));
+        }
+        
     }
 
-    public void ConvertToMidiCodes() {
+    private void ConvertToMidiCodes() {
         if (ConsistencyCheck(volumes, notes, octaves)) {
             lastMidiCodes.clear();
             lastMidiCodes = midiCodes;
@@ -62,21 +73,16 @@ public class Avspilling {
         }
     }
 
-    public void MidiCodesToStart() {
-        if (ConsistencyCheck(midiCodes, volumes)) {
+    private void MidiCodesToStart() {
             midiToStart.clear();
             for (int i = 0; i < midiCodes.size(); i++) {
                 if (!lastMidiCodes.contains(midiCodes.get(i))) {
                     midiToStart.add(midiCodes.get(i));
                 }
             }
-        } else {
-            fuckUp++;
-        }
-    }
+        } 
 
-    public void MidiCodesToStop() {
-        if (ConsistencyCheck(midiCodes, volumes)) {
+    private void MidiCodesToStop() {
             midiToStop.clear();
             midiToStop = midiCodes;
             Iterator<Integer> iterator = midiToStop.iterator();
@@ -86,35 +92,32 @@ public class Avspilling {
                     iterator.remove();
                 }
             }
-        }
-        else{
-            fuckUp++;
-        }
+        } 
+
+    private void retireMidiCodes() {
+        lastMidiCodes = midiCodes;
     }
 
-    public boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
+    private boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
         if (a.size() == b.size() && a.size() == c.size()) {
             return (true);
         }
         return (false);
     }
 
-    public boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b) {
-        if (a.size() == b.size()) {
-            return (true);
-        }
-        return (false);
-    }
-
-    public void StartNote() {
+    private void StartNote() {
         for (int i : midiToStart) {
             channels[channel].noteOn(midiToStart.get(i), volumesToStart.get(i));
         }
     }
 
-    public void EndNote(ArrayList<Integer> midiCode) {
-        for (int i : midiCode) {
-            channels[channel].noteOff(midiCode.get(i));
+    private void EndNote() {
+        if (midiCodes.isEmpty()) {
+            EndAllNotes();
+        } else {
+            for (int i : midiToStop) {
+                channels[channel].noteOff(midiToStop.get(i));
+            }
         }
     }
 

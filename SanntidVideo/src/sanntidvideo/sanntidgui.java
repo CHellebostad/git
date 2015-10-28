@@ -37,7 +37,6 @@ public class sanntidgui extends javax.swing.JFrame {
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(sanntidgui.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     /**
@@ -368,6 +367,7 @@ public class sanntidgui extends javax.swing.JFrame {
         if (isRunning == true) {
             isRunning = false;
         }
+        main.setStop();
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void startButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButton1ActionPerformed
