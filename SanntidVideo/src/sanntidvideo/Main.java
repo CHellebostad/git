@@ -43,12 +43,12 @@ public class Main implements Runnable {
     private final BlockingQueue noteReturnQueue4 = new ArrayBlockingQueue(1, true);
     private final BlockingQueue noteReturnQueue5 = new ArrayBlockingQueue(1, true);
     private final BlockingQueue videoQueue = new ArrayBlockingQueue(1, true);
-    private final ArrayList<ArrayList<Integer>> tilAvspilling = new ArrayList<>();
+    private final ArrayList<String> tilAvspilling = new ArrayList<>();
     private BlockingQueue guiStream = new ArrayBlockingQueue(1, true);
     public boolean startProcessing;
     public BufferedImage img;
     public boolean CLOSE;
-    private final VideoCap video;
+//    private final VideoCap video;
     private boolean queueFinished = false;
     Thread t1;
     Thread t0;
@@ -67,34 +67,33 @@ public class Main implements Runnable {
     static BufferedImage bildeTilSplitting;
     Timer tim0;
     Avspilling spill = new Avspilling();
-    
 
     public Main(BlockingQueue queue) throws IOException, InterruptedException {
         guiStream = queue;
-        video = new VideoCap(videoQueue);
-        Cap = new Thread(video);
+//        video = new VideoCap(videoQueue);
+//        Cap = new Thread(video);
         bs = new BildeSplit();
         t0 = new Thread(new OCR("1", queue0, noteReturnQueue0));
         t1 = new Thread(new OCR("2", queue1, noteReturnQueue1));
         t2 = new Thread(new OCR("3", queue2, noteReturnQueue2));
-        t3 = new Thread(new OCR("4", queue3, noteReturnQueue3));
-        t4 = new Thread(new OCR("5", queue4, noteReturnQueue4));
-        t5 = new Thread(new OCR("6", queue5, noteReturnQueue5));
+//        t3 = new Thread(new OCR("4", queue3, noteReturnQueue3));
+//        t4 = new Thread(new OCR("5", queue4, noteReturnQueue4));
+//        t5 = new Thread(new OCR("6", queue5, noteReturnQueue5));
 
     }
 
     @Override
     public void run() {
-        Cap.start();
+//        Cap.start();
         t0.start();
-//        t1.start();
-//        t2.start();
+        t1.start();
+        t2.start();
 //        t3.start();
 //        t4.start();
 //        t5.start();
 //        Laster inn bildet manuelt
         try {
-            img = ImageIO.read(new File("pic11.png"));
+            img = ImageIO.read(new File("pic13.png"));
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,56 +110,55 @@ public class Main implements Runnable {
             if (startProcessing) {
                 while (!queueFinished) {
                     queue0.offer(bilderTilAnalyse.get(0));
-//                    queue1.offer(bilderTilAnalyse.get(1));
-//                    queue2.offer(bilderTilAnalyse.get(2));
+                    queue1.offer(bilderTilAnalyse.get(1));
+                    queue2.offer(bilderTilAnalyse.get(2));
 //                    queue3.offer(bilderTilAnalyse.get(3));
 //                    queue4.offer(bilderTilAnalyse.get(4));
 //                    queue5.offer(bilderTilAnalyse.get(5));
-                    if (queue0.size() > 0) {
+                    if (queue0.size() > 0 && queue1.size() > 0 && queue2.size() > 0){// && queue3.size() > 0 && queue4.size() > 0 && queue5.size() > 0) {
                         queueFinished = true;
-                        System.out.println("Queue finished");
+//                        System.out.println("Queue finished");
                     }
                 }
 
                 try {
-                    ArrayList<Integer> ret0 = (ArrayList) noteReturnQueue0.take();
-                    System.out.println("Tar Array");
-//                    ArrayList<Integer> ret1 = (ArrayList) noteReturnQueue1.take();
-//                    ArrayList<Integer> ret2 = (ArrayList) noteReturnQueue2.take();
-//                    ArrayList<Integer> ret3 = (ArrayList) noteReturnQueue3.take();
-//                    ArrayList<Integer> ret4 = (ArrayList) noteReturnQueue4.take();
-//                    ArrayList<Integer> ret5 = (ArrayList) noteReturnQueue5.take();
+//                    System.out.println("Tar Array");
+                    String ret0 = (String) noteReturnQueue0.take();
+                    String ret1 = (String) noteReturnQueue1.take();
+                    String ret2 = (String) noteReturnQueue2.take();
+//                    String ret3 = (String) noteReturnQueue3.take();
+//                    String ret4 = (String) noteReturnQueue4.take();
+//                    String ret5 = (String) noteReturnQueue5.take();
+//                    System.out.println("Thread0: "+ret0);
+//                    System.out.println("Thread1: "+ret1);
+//                    System.out.println("Thread2: "+ret2);
+//                    System.out.println("Thread3: "+ret3);
+//                    System.out.println("Thread4: "+ret4);
+//                    System.out.println("Thread5: "+ret5);
                     if (!ret0.isEmpty()) {
-                    tilAvspilling.add(ret0);
+                        tilAvspilling.add(ret0);
                     }
-//                    if (!ret1.isEmpty()) {
-//                    tilAvspilling.add(ret1);
-//                    }
-//                    if (!ret2.isEmpty()) {
-//                    tilAvspilling.add(ret2);
-//                    }
+                    if (!ret1.isEmpty()) {
+                        tilAvspilling.add(ret1);
+                    }
+                    if (!ret2.isEmpty()) {
+                        tilAvspilling.add(ret2);
+                    }
 //                    if (!ret3.isEmpty()) {
-//                    tilAvspilling.add(ret3);
+//                        tilAvspilling.add(ret3);
 //                    }
 //                    if (!ret4.isEmpty()) {
-//                    tilAvspilling.add(ret4);
+//                        tilAvspilling.add(ret4); 
 //                    }
 //                    if (!ret5.isEmpty()) {
-//                    tilAvspilling.add(ret5);
+//                        tilAvspilling.add(ret5);
 //                    }
-                    
-                    
-                    
-//                    System.out.println(ret0.get(0) + " " + ret0.get(1) + " " + ret0.get(2));
-//                    System.out.println(ret1.get(0) + " " + ret1.get(1) + " " + ret1.get(2));
+
                     queueFinished = false;
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 spill.MidiCycle(tilAvspilling);
-                endTime = System.currentTimeMillis();
-
-                System.out.println("Cycle finished");
             }
 
         }
@@ -185,11 +183,12 @@ public class Main implements Runnable {
     }
 
     public void setClosing() {
-        video.close();
+//        video.close();
         CLOSE = true;
 
     }
-    public void setStop(){
+
+    public void setStop() {
         spill.EndAllNotes();
     }
 
