@@ -5,21 +5,15 @@
  */
 package sanntidvideo;
 
-import com.aspose.ocr.IRecognizedPartInfo;
-import com.aspose.ocr.IRecognizedText;
-import com.aspose.ocr.IRecognizedTextPartInfo;
 import com.aspose.ocr.ImageStream;
 import com.aspose.ocr.ImageStreamFormat;
 import com.aspose.ocr.OcrEngine;
-import com.aspose.ocr.internal.is;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,10 +26,8 @@ import javax.imageio.ImageIO;
 public class OCR implements Runnable {
 
     static ArrayList<BufferedImage> bilderTilAnalyse = new ArrayList<>();
-    private boolean search = false;
     static String result;
     static String lastResult;
-
     String ThreadNr;
     OcrEngine ocr;
     InputStream is;
@@ -49,7 +41,7 @@ public class OCR implements Runnable {
     public boolean CLOSE;
 
     private BlockingQueue imageInputQueue = null;
-    private BlockingQueue noteReturnQueue;
+    private final BlockingQueue noteReturnQueue;
 
     public OCR(String Thread, BlockingQueue queue, BlockingQueue queue1) throws InterruptedException, IOException {
         ThreadNr = Thread;

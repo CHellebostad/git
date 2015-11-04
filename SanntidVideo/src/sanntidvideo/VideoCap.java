@@ -14,6 +14,7 @@ import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 public class VideoCap implements Runnable {
 
@@ -21,9 +22,10 @@ public class VideoCap implements Runnable {
     Mat imgGray = new Mat();
     private final VideoCapture cap;
     private BlockingQueue bq = null;
-    public boolean CLOSE;
+    public boolean CLOSE;   
 
     static {
+        new NativeDiscovery().discover();
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
@@ -32,7 +34,6 @@ public class VideoCap implements Runnable {
         cap = new VideoCapture();
         cap.open(0);
         System.out.println(cap.get(CV_CAP_PROP_FRAME_WIDTH) + " " + cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-
         System.out.println("Camera status: " + cap.isOpened());
 
     }
@@ -43,13 +44,12 @@ public class VideoCap implements Runnable {
             cap.read(img);
             bq.offer(toBufferedImage(img));
         }
-        
-    }
+
+    }    
+
     public void close() {
         cap.release();
     }
-
-    
 
     public Image toBufferedImage(Mat m) {
         int type = BufferedImage.TYPE_BYTE_GRAY;

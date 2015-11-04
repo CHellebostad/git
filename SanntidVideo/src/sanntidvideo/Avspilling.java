@@ -2,6 +2,8 @@ package sanntidvideo;
 
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.MidiSystem;
@@ -20,8 +22,10 @@ public class Avspilling {
     public ArrayList<Integer> volumes = new ArrayList<>();
     public ArrayList<Integer> volumesToStart = new ArrayList<>();
     public final ArrayList<Integer> midiCodes = new ArrayList<>();
-    public ArrayList<Integer> lastMidiCodes = new ArrayList<>();
-    public ArrayList<Integer> midiToStop = new ArrayList<>();
+    private ArrayList<Integer> lastMidiCodes = new ArrayList<>(Collections.nCopies(3, 0));
+    private ArrayList<Integer> midiToStop = new ArrayList<>();
+    private int[] last = new int[]{0,0,0};
+    private int[] curr = new int[]{0,0,0};
     public ArrayList<Integer> midiToStart = new ArrayList<>();
     public int fuckUp = 0;
     int channel = 1;
@@ -45,14 +49,13 @@ public class Avspilling {
         try {
             stringToNotes(ar);
             ar.clear();
-//            System.out.println(note.get(0) + " " + note.get(1) + " " + note.get(2));
             ConvertToMidiCodes();
             MidiCodesToStart();
-//        MidiCodesToStop();
-//        EndNote();
+//            MidiCodesToStop();
+//            EndNote();
             StartNote();
         } catch (InterruptedException ex) {
-            Logger.getLogger(Avspilling.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -62,17 +65,25 @@ public class Avspilling {
             int j = 24 + (octaves.get(i) * 12) + notes.get(i);
             midiCodes.add(j);
         }
+//        System.out.println("Curr: " + midiCodes);
+//        System.out.println("Last: "+lastMidiCodes);
     }
 
     private void MidiCodesToStart() {
-        midiToStart.clear();
-        for (int i = 0; i < midiCodes.size(); i++) {
-            if (!lastMidiCodes.contains(midiCodes.get(i))) {
+      
+        for(int i=0;i<midiCodes.size();i++){
+            
+            if (midiCodes.get(i) != lastMidiCodes.get(i)) {
+//                System.out.println("Midicode: " + midiCodes.get(i));
                 midiToStart.add(midiCodes.get(i));
+//                System.out.println("MidiToStart: " + midiToStart.get(i));
             }
+            lastMidiCodes.set(i, midiCodes.get(i));
         }
-        lastMidiCodes.clear();
-        lastMidiCodes = midiCodes;
+//        for(int y = 0;y<midiCodes.size();y++){
+//          lastMidiCodes.add(y, midiCodes.get(y));
+//        }
+
 
     }
 
@@ -86,6 +97,7 @@ public class Avspilling {
                 iterator.remove();
             }
         }
+
     }
 
 //    private boolean ConsistencyCheck(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> c) {
@@ -100,6 +112,7 @@ public class Avspilling {
                 channels[channel].noteOn(midiToStart.get(i), volumes.get(i));
             }
         }
+        midiToStart.clear();
     }
 
     private void EndNote() {
@@ -121,26 +134,41 @@ public class Avspilling {
         octaves.clear();
         notes.clear();
         for (String result : ar) {
-
-            String[] s = result.split("-");
-            if (noteSwitch(s[2]) == 12) {
-                faultyNotes.add(result);
-                badNotes++;
-            } else if (Integer.parseInt(s[1]) < 0 || Integer.parseInt(s[1]) > 8) {
-                faultyNotes.add(result);
-                badNotes++;
-            } else if (Integer.parseInt(s[0]) < 0 || Integer.parseInt(s[0]) > 127) {
-                faultyNotes.add(result);
-                badNotes++;
-            } else if (s.length == 3) {
-                volumes.add(Integer.parseInt(s[0]));
-                octaves.add(Integer.parseInt(s[1]));
-                notes.add(noteSwitch(s[2]));
+            String replacedN = result.replaceAll("N", "#");
+            String replacedResult = replacedN.replaceAll("H", "#");
+            String[] s = replacedResult.split("-");
+//            System.out.println(replacedResult);
+//            System.out.println(s.length);
+            try{
+            if (s.length > 2) {
+                if (noteSwitch(s[2]) == 12) {
+                    faultyNotes.add(replacedResult);
+                    badNotes++;
+                } else if (Integer.parseInt(s[1]) < 0 || Integer.parseInt(s[1]) > 8) {
+                    faultyNotes.add(replacedResult);
+                    badNotes++;
+                } else if (Integer.parseInt(s[0]) < 0 || Integer.parseInt(s[0]) > 127) {
+                    faultyNotes.add(replacedResult);
+                    badNotes++;
+                } else if (s.length == 3) {
+                    volumes.add(Integer.parseInt(s[0]));
+                    octaves.add(Integer.parseInt(s[1]));
+                    notes.add(noteSwitch(s[2]));
+                } else {
+                    faultyNotes.add(replacedResult);
+                    badNotes++;
+                }
             } else {
-                faultyNotes.add(result);
-                badNotes++;
+                System.out.println("Incomplete text");
+
+            }
+            }catch(Exception e){
+                System.out.println(e);
             }
         }
+//        System.out.println(volumes);
+//        System.out.println(octaves);
+//        System.out.println(notes);
     }
 
     private int noteSwitch(String s) {

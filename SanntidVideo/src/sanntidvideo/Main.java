@@ -48,7 +48,7 @@ public class Main implements Runnable {
     public boolean startProcessing;
     public BufferedImage img;
     public boolean CLOSE;
-//    private final VideoCap video;
+    private final VideoCap video;
     private boolean queueFinished = false;
     Thread t1;
     Thread t0;
@@ -70,13 +70,13 @@ public class Main implements Runnable {
 
     public Main(BlockingQueue queue) throws IOException, InterruptedException {
         guiStream = queue;
-//        video = new VideoCap(videoQueue);
-//        Cap = new Thread(video);
+        video = new VideoCap(videoQueue);
+        Cap = new Thread(video);
         bs = new BildeSplit();
         t0 = new Thread(new OCR("1", queue0, noteReturnQueue0));
         t1 = new Thread(new OCR("2", queue1, noteReturnQueue1));
         t2 = new Thread(new OCR("3", queue2, noteReturnQueue2));
-//        t3 = new Thread(new OCR("4", queue3, noteReturnQueue3));
+        t3 = new Thread(new OCR("4", queue3, noteReturnQueue3));
 //        t4 = new Thread(new OCR("5", queue4, noteReturnQueue4));
 //        t5 = new Thread(new OCR("6", queue5, noteReturnQueue5));
 
@@ -84,25 +84,25 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-//        Cap.start();
+        Cap.start();
         t0.start();
         t1.start();
         t2.start();
-//        t3.start();
+        t3.start();
 //        t4.start();
 //        t5.start();
 //        Laster inn bildet manuelt
-        try {
-            img = ImageIO.read(new File("pic13.png"));
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            img = ImageIO.read(new File("pic13.png"));
+//        } catch (IOException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
         while (true) {
             try {
-//                img = (BufferedImage) videoQueue.take();
+                img = (BufferedImage) videoQueue.take();
                 bilderTilAnalyse = bs.Split(img);
-            } catch (IOException ex) {
+            } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
             guiStream.offer(img);
@@ -112,10 +112,10 @@ public class Main implements Runnable {
                     queue0.offer(bilderTilAnalyse.get(0));
                     queue1.offer(bilderTilAnalyse.get(1));
                     queue2.offer(bilderTilAnalyse.get(2));
-//                    queue3.offer(bilderTilAnalyse.get(3));
+                    queue3.offer(bilderTilAnalyse.get(3));
 //                    queue4.offer(bilderTilAnalyse.get(4));
 //                    queue5.offer(bilderTilAnalyse.get(5));
-                    if (queue0.size() > 0 && queue1.size() > 0 && queue2.size() > 0){// && queue3.size() > 0 && queue4.size() > 0 && queue5.size() > 0) {
+                    if (queue0.size() > 0 && queue1.size() > 0 && queue2.size() > 0 && queue3.size() > 0) {// && queue4.size() > 0 && queue5.size() > 0) {
                         queueFinished = true;
 //                        System.out.println("Queue finished");
                     }
@@ -126,7 +126,7 @@ public class Main implements Runnable {
                     String ret0 = (String) noteReturnQueue0.take();
                     String ret1 = (String) noteReturnQueue1.take();
                     String ret2 = (String) noteReturnQueue2.take();
-//                    String ret3 = (String) noteReturnQueue3.take();
+                    String ret3 = (String) noteReturnQueue3.take();
 //                    String ret4 = (String) noteReturnQueue4.take();
 //                    String ret5 = (String) noteReturnQueue5.take();
 //                    System.out.println("Thread0: "+ret0);
@@ -144,9 +144,9 @@ public class Main implements Runnable {
                     if (!ret2.isEmpty()) {
                         tilAvspilling.add(ret2);
                     }
-//                    if (!ret3.isEmpty()) {
-//                        tilAvspilling.add(ret3);
-//                    }
+                    if (!ret3.isEmpty()) {
+                        tilAvspilling.add(ret3);
+                    }
 //                    if (!ret4.isEmpty()) {
 //                        tilAvspilling.add(ret4); 
 //                    }
@@ -183,7 +183,7 @@ public class Main implements Runnable {
     }
 
     public void setClosing() {
-//        video.close();
+        video.close();
         CLOSE = true;
 
     }

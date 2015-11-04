@@ -285,7 +285,7 @@ public class sanntidgui extends javax.swing.JFrame {
     private void jButton_attachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_attachActionPerformed
 // TODO add your handling code here:
         JFileChooser chooser = new JFileChooser();
-        
+
         chooser.showOpenDialog(null);
         File f = chooser.getSelectedFile();
         String filename = f.getAbsolutePath();
