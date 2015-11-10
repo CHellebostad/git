@@ -11,10 +11,11 @@ import java.awt.image.DataBufferByte;
 import java.util.concurrent.BlockingQueue;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 public class VideoCap implements Runnable {
 
@@ -22,30 +23,44 @@ public class VideoCap implements Runnable {
     Mat imgGray = new Mat();
     private final VideoCapture cap;
     private BlockingQueue bq = null;
-    public boolean CLOSE;   
+    public boolean CLOSE;
 
     static {
-        new NativeDiscovery().discover();
+
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     public VideoCap(BlockingQueue queue) {
         bq = queue;
         cap = new VideoCapture();
-        cap.open(0);
+        openFromFile();
         System.out.println(cap.get(CV_CAP_PROP_FRAME_WIDTH) + " " + cap.get(CV_CAP_PROP_FRAME_HEIGHT));
         System.out.println("Camera status: " + cap.isOpened());
+    }
 
+    private void openFromFile() {
+        cap.open("video.avi");
+    }
+
+    private void openCamera() {
+        cap.open(0);
     }
 
     @Override
     public void run() {
         while (true) {
-            cap.read(img);
-            bq.offer(toBufferedImage(img));
+            if (cap.read(img)) {
+                Mat dst = new Mat();
+                Imgproc.resize(img, dst, new Size(320, 240));
+                bq.offer(toBufferedImage(dst));
+            }
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+            }
         }
 
-    }    
+    }
 
     public void close() {
         cap.release();

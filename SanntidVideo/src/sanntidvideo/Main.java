@@ -77,8 +77,8 @@ public class Main implements Runnable {
         t1 = new Thread(new OCR("2", queue1, noteReturnQueue1));
         t2 = new Thread(new OCR("3", queue2, noteReturnQueue2));
         t3 = new Thread(new OCR("4", queue3, noteReturnQueue3));
-//        t4 = new Thread(new OCR("5", queue4, noteReturnQueue4));
-//        t5 = new Thread(new OCR("6", queue5, noteReturnQueue5));
+        t4 = new Thread(new OCR("5", queue4, noteReturnQueue4));
+        t5 = new Thread(new OCR("6", queue5, noteReturnQueue5));
 
     }
 
@@ -89,8 +89,8 @@ public class Main implements Runnable {
         t1.start();
         t2.start();
         t3.start();
-//        t4.start();
-//        t5.start();
+        t4.start();
+        t5.start();
 //        Laster inn bildet manuelt
 //        try {
 //            img = ImageIO.read(new File("pic13.png"));
@@ -113,9 +113,9 @@ public class Main implements Runnable {
                     queue1.offer(bilderTilAnalyse.get(1));
                     queue2.offer(bilderTilAnalyse.get(2));
                     queue3.offer(bilderTilAnalyse.get(3));
-//                    queue4.offer(bilderTilAnalyse.get(4));
-//                    queue5.offer(bilderTilAnalyse.get(5));
-                    if (queue0.size() > 0 && queue1.size() > 0 && queue2.size() > 0 && queue3.size() > 0) {// && queue4.size() > 0 && queue5.size() > 0) {
+                    queue4.offer(bilderTilAnalyse.get(4));
+                    queue5.offer(bilderTilAnalyse.get(5));
+                    if (queue0.size() > 0 && queue1.size() > 0 && queue2.size() > 0 && queue3.size() > 0 && queue4.size() > 0 && queue5.size() > 0) {
                         queueFinished = true;
 //                        System.out.println("Queue finished");
                     }
@@ -127,8 +127,8 @@ public class Main implements Runnable {
                     String ret1 = (String) noteReturnQueue1.take();
                     String ret2 = (String) noteReturnQueue2.take();
                     String ret3 = (String) noteReturnQueue3.take();
-//                    String ret4 = (String) noteReturnQueue4.take();
-//                    String ret5 = (String) noteReturnQueue5.take();
+                    String ret4 = (String) noteReturnQueue4.take();
+                    String ret5 = (String) noteReturnQueue5.take();
 //                    System.out.println("Thread0: "+ret0);
 //                    System.out.println("Thread1: "+ret1);
 //                    System.out.println("Thread2: "+ret2);
@@ -147,12 +147,12 @@ public class Main implements Runnable {
                     if (!ret3.isEmpty()) {
                         tilAvspilling.add(ret3);
                     }
-//                    if (!ret4.isEmpty()) {
-//                        tilAvspilling.add(ret4); 
-//                    }
-//                    if (!ret5.isEmpty()) {
-//                        tilAvspilling.add(ret5);
-//                    }
+                    if (!ret4.isEmpty()) {
+                        tilAvspilling.add(ret4); 
+                    }
+                    if (!ret5.isEmpty()) {
+                        tilAvspilling.add(ret5);
+                    }
 
                     queueFinished = false;
                 } catch (InterruptedException ex) {

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.MidiSystem;
@@ -22,7 +23,7 @@ public class Avspilling {
     public ArrayList<Integer> volumes = new ArrayList<>();
     public ArrayList<Integer> volumesToStart = new ArrayList<>();
     public final ArrayList<Integer> midiCodes = new ArrayList<>();
-    private ArrayList<Integer> lastMidiCodes = new ArrayList<>(Collections.nCopies(3, 0));
+    private final ArrayList<Integer> lastMidiCodes = new ArrayList<>(Collections.nCopies(6, 0));
     private ArrayList<Integer> midiToStop = new ArrayList<>();
     private int[] last = new int[]{0,0,0};
     private int[] curr = new int[]{0,0,0};
@@ -73,7 +74,7 @@ public class Avspilling {
       
         for(int i=0;i<midiCodes.size();i++){
             
-            if (midiCodes.get(i) != lastMidiCodes.get(i)) {
+            if (!Objects.equals(midiCodes.get(i), lastMidiCodes.get(i))) {
 //                System.out.println("Midicode: " + midiCodes.get(i));
                 midiToStart.add(midiCodes.get(i));
 //                System.out.println("MidiToStart: " + midiToStart.get(i));
