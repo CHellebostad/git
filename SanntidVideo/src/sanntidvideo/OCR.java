@@ -73,12 +73,12 @@ public class OCR extends TimerTask {
                     result = result.replaceAll("N", "#");
                     result = result.replaceAll("H", "#");
                     result = result.replaceAll("M", "#");
-                    System.out.println("Thread nr: " + ThreadNr + " Resultat: " + result);
+//                    System.out.println("Thread nr: " + ThreadNr + " Resultat: " + result);
                 }
             
             noteReturnQueue.put(result);
             //System.out.println("analyse ferdig tråd " + ThreadNr + ": " + (System.currentTimeMillis() - starttime) + "\n");
-                System.out.println("Analysetid tråd " + ThreadNr + ": " + (System.currentTimeMillis()- millisA));
+//                System.out.println("Analysetid tråd " + ThreadNr + ": " + (System.currentTimeMillis()- millisA));
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(OCR.class.getName()).log(Level.SEVERE, null, ex);

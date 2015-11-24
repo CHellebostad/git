@@ -89,7 +89,6 @@ public class Main implements Runnable {
         video = Cap;
         bs = new BildeSplit();
         t0 = new OCR("1", queue0, noteReturnQueue0);
-        
         t1 = new OCR("2", queue1, noteReturnQueue1);
         t2 = new OCR("3", queue2, noteReturnQueue2);
         t3 = new OCR("4", queue3, noteReturnQueue3);
@@ -101,7 +100,7 @@ public class Main implements Runnable {
     @Override
     public void run() {
         java.util.Timer timer7 = new java.util.Timer(true);
-        timer7.scheduleAtFixedRate(video, 0, 35);
+        timer7.scheduleAtFixedRate(video, 0, 33);
         
         java.util.Timer timer0 = new java.util.Timer(true);
         java.util.Timer timer1 = new java.util.Timer(true);
@@ -130,7 +129,7 @@ public class Main implements Runnable {
             try {
                 img = (BufferedImage) videoQueue.take();
                 bilderTilAnalyse = bs.Split(img);
-            } catch (IOException | InterruptedException ex) {
+            } catch ( InterruptedException | IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
             guiStream.offer(img);
@@ -186,7 +185,7 @@ public class Main implements Runnable {
                             tilAvspilling.add(ret5);
                             refTest5 = ret5;
                         }
-
+//                        System.out.println("");
                         queueFinished = false;
                     }
                 } catch (InterruptedException ex) {

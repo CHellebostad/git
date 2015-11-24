@@ -13,7 +13,8 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Synthesizer;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiUnavailableException;
-
+import org.jfugue.player.*;
+import org.jfugue.pattern.*;
 /**
  *
  * @author Ivar
@@ -35,7 +36,8 @@ public class Avspilling extends TimerTask{
     private static MidiChannel[] channels;
     BlockingQueue bq;
     private ArrayList<String> inputQueue = new ArrayList<>();
-
+    private final Player player = new Player();
+//    private Pattern pattern;
     static {
         try {
             Synthesizer synth = MidiSystem.getSynthesizer();
@@ -79,7 +81,7 @@ public class Avspilling extends TimerTask{
     }
 
     private void MidiCodesToStart() {
-      
+      System.out.println(midiCodes);
         for(int i=0;i<midiCodes.size();i++){
             
             if (!Objects.equals(midiCodes.get(i), lastMidiCodes.get(i))) {
@@ -87,6 +89,7 @@ public class Avspilling extends TimerTask{
                 midiToStart.add(midiCodes.get(i));
 //                System.out.println("MidiToStart: " + midiToStart.get(i));
             }
+          
             lastMidiCodes.set(i, midiCodes.get(i));
         }
 //        for(int y = 0;y<midiCodes.size();y++){
@@ -119,11 +122,19 @@ public class Avspilling extends TimerTask{
 //        return (false);
 //    }
     private void StartNote() {
-        if (!midiCodes.isEmpty()) {
+//        if (!midiCodes.isEmpty()) {
+//          System.out.println("Midicodes empty ? "+ midiCodes.isEmpty());
+//          System.out.println("Any notes to start? "+ !midiToStart.isEmpty());
             for (int i = 0; i < midiToStart.size(); i++) {
+//                System.out.println(midiToStart.get(i).toString()+"a"+volumes.get(i).toString());
+//                player.play(midiToStart.get(0).toString()+"a"+volumes.get(0).toString());
+//                player.play(midiToStart.get(1).toString()+"a"+volumes.get(1).toString());
+//                player.play(midiToStart.get(2).toString()+"a"+volumes.get(2).toString());
                 channels[channel].noteOn(midiToStart.get(i), volumes.get(i));
+//                channels[channel].noteOn(midiToStart.get(1), volumes.get(1));
+//                channels[channel].noteOn(midiToStart.get(2), volumes.get(2));
             }
-        }
+//        }
         midiToStart.clear();
     }
 
