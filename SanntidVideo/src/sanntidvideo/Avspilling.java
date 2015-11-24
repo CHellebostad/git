@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.MidiSystem;
@@ -16,23 +18,23 @@ import javax.sound.midi.MidiUnavailableException;
  *
  * @author Ivar
  */
-public class Avspilling {
+public class Avspilling extends TimerTask{
 
     public ArrayList<Integer> octaves = new ArrayList<>();
     public ArrayList<Integer> notes = new ArrayList<>();
     public ArrayList<Integer> volumes = new ArrayList<>();
     public ArrayList<Integer> volumesToStart = new ArrayList<>();
     public final ArrayList<Integer> midiCodes = new ArrayList<>();
-    private final ArrayList<Integer> lastMidiCodes = new ArrayList<>(Collections.nCopies(6, 0));
-    private ArrayList<Integer> midiToStop = new ArrayList<>();
-    private int[] last = new int[]{0,0,0};
-    private int[] curr = new int[]{0,0,0};
+    private final ArrayList<Integer> lastMidiCodes = new ArrayList<>(Collections.nCopies(7, 0));
+    private final ArrayList<Integer> midiToStop = new ArrayList<>(Collections.nCopies(7, 0));
     public ArrayList<Integer> midiToStart = new ArrayList<>();
     public int fuckUp = 0;
     int channel = 1;
     public final ArrayList<String> faultyNotes = new ArrayList<>();
     public int badNotes = 0;
     private static MidiChannel[] channels;
+    BlockingQueue bq;
+    private ArrayList<String> inputQueue = new ArrayList<>();
 
     static {
         try {
@@ -44,12 +46,17 @@ public class Avspilling {
         }
 
     }
+    
+    public Avspilling(BlockingQueue queue){
+        bq = queue;
+    }
 
-    public void MidiCycle(ArrayList<String> ar) {
-
+    @Override
+    public void run() {
         try {
-            stringToNotes(ar);
-            ar.clear();
+            inputQueue = (ArrayList<String>) bq.take();
+            stringToNotes(inputQueue);
+            inputQueue.clear();
             ConvertToMidiCodes();
             MidiCodesToStart();
 //            MidiCodesToStop();
@@ -58,6 +65,7 @@ public class Avspilling {
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+        
     }
 
     private void ConvertToMidiCodes() {
@@ -74,7 +82,7 @@ public class Avspilling {
       
         for(int i=0;i<midiCodes.size();i++){
             
-            if (!Objects.equals(midiCodes.get(i), lastMidiCodes.get(i))) {
+            if (midiCodes.get(i)!= lastMidiCodes.get(i)) {
 //                System.out.println("Midicode: " + midiCodes.get(i));
                 midiToStart.add(midiCodes.get(i));
 //                System.out.println("MidiToStart: " + midiToStart.get(i));
@@ -90,7 +98,10 @@ public class Avspilling {
 
     private void MidiCodesToStop() {
         midiToStop.clear();
-        midiToStop = midiCodes;
+        for (int i=0;i<midiCodes.size();i++) {
+            System.out.println(midiCodes.size());
+        midiToStop.add(midiCodes.get(i));
+    }
         Iterator<Integer> iterator = midiToStop.iterator();
         while (iterator.hasNext()) {
             int integ = iterator.next();
@@ -135,32 +146,31 @@ public class Avspilling {
         octaves.clear();
         notes.clear();
         for (String result : ar) {
-            String replacedN = result.replaceAll("N", "#");
-            String replacedResult = replacedN.replaceAll("H", "#");
-            String[] s = replacedResult.split("-");
+            
+            String[] s = result.split("-");
 //            System.out.println(replacedResult);
 //            System.out.println(s.length);
             try{
             if (s.length > 2) {
                 if (noteSwitch(s[2]) == 12) {
-                    faultyNotes.add(replacedResult);
+                    faultyNotes.add(result);
                     badNotes++;
                 } else if (Integer.parseInt(s[1]) < 0 || Integer.parseInt(s[1]) > 8) {
-                    faultyNotes.add(replacedResult);
+                    faultyNotes.add(result);
                     badNotes++;
                 } else if (Integer.parseInt(s[0]) < 0 || Integer.parseInt(s[0]) > 127) {
-                    faultyNotes.add(replacedResult);
+                    faultyNotes.add(result);
                     badNotes++;
                 } else if (s.length == 3) {
                     volumes.add(Integer.parseInt(s[0]));
                     octaves.add(Integer.parseInt(s[1]));
                     notes.add(noteSwitch(s[2]));
                 } else {
-                    faultyNotes.add(replacedResult);
+                    faultyNotes.add(result);
                     badNotes++;
                 }
             } else {
-                System.out.println("Incomplete text");
+//                System.out.println("Incomplete text");
 
             }
             }catch(Exception e){
@@ -196,9 +206,13 @@ public class Avspilling {
                 return (9);
             case "a#":
                 return (10);
-            case "h":
+            case "b":
                 return (11);
         }
         return (12);
     }
+
+    
+
+    
 }

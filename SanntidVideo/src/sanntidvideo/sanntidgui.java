@@ -359,6 +359,7 @@ public class sanntidgui extends javax.swing.JFrame {
         if (isRunning == false) {
             isRunning = true;
             start();
+            main.startVideo();
         }
 
     }//GEN-LAST:event_startButtonActionPerformed
@@ -366,8 +367,9 @@ public class sanntidgui extends javax.swing.JFrame {
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         if (isRunning == true) {
             isRunning = false;
+            main.stopVideo();
         }
-        main.setStop();
+        
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void startButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButton1ActionPerformed

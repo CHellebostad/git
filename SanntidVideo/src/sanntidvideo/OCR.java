@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ import javax.imageio.ImageIO;
  *
  * @author Christian-Heim
  */
-public class OCR implements Runnable {
+public class OCR extends TimerTask {
 
     static ArrayList<BufferedImage> bilderTilAnalyse = new ArrayList<>();
     static String result;
@@ -39,6 +40,8 @@ public class OCR implements Runnable {
     String Result;
 //    showPicture showPictures;
     public boolean CLOSE;
+    private static long starttime = System.currentTimeMillis();
+    long millisA;
 
     private BlockingQueue imageInputQueue = null;
     private final BlockingQueue noteReturnQueue;
@@ -54,25 +57,33 @@ public class OCR implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-//                    millis1 = System.currentTimeMillis();
+//        System.out.println("Totaltid: "+(System.currentTimeMillis()-millisA));
+        millisA = System.currentTimeMillis();
+        try {
+            if (!imageInputQueue.isEmpty()) {
+                //System.out.println("Analyse starter tråd " + ThreadNr + ": " + (System.currentTimeMillis() - starttime));
+                
                 image = (BufferedImage) imageInputQueue.take();
 //                    showPictures.show(ImageIO.read(convert(image)));
                 ocr.setImage(ImageStream.fromStream(convert(image), ImageStreamFormat.Png));
+
                 if (ocr.process()) {
                     result = ocr.getText().toString();
                     result = result.replace("\n", "").replace("\r", "");
-//                        System.out.println("Thread nr: " + ThreadNr + " Resultat: " + result);
-//                        millis2 = System.currentTimeMillis();
-//                        System.out.println("Prosessering " + (millis2 - millis1) + " ms");
+                    result = result.replaceAll("N", "#");
+                    result = result.replaceAll("H", "#");
+                    result = result.replaceAll("M", "#");
+                    System.out.println("Thread nr: " + ThreadNr + " Resultat: " + result);
                 }
-                noteReturnQueue.put(result);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(OCR.class.getName()).log(Level.SEVERE, null, ex);
+            
+            noteReturnQueue.put(result);
+            //System.out.println("analyse ferdig tråd " + ThreadNr + ": " + (System.currentTimeMillis() - starttime) + "\n");
+                System.out.println("Analysetid tråd " + ThreadNr + ": " + (System.currentTimeMillis()- millisA));
             }
-
+        } catch (InterruptedException ex) {
+            Logger.getLogger(OCR.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     private InputStream convert(BufferedImage img) {

@@ -8,6 +8,7 @@ package sanntidvideo;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -17,23 +18,37 @@ import org.opencv.videoio.VideoCapture;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 
-public class VideoCap implements Runnable {
+public class VideoCap extends TimerTask {
 
     Mat img = new Mat();
     Mat imgGray = new Mat();
     private final VideoCapture cap;
     private BlockingQueue bq = null;
     public boolean CLOSE;
+    public boolean start;
+    TimerTask task;
+    boolean loaded = false;
 
     static {
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    @Override
+    public void run() {
+        if (start && loaded) {
+            if (cap.read(img)) {
+                Mat dst = new Mat();
+                Imgproc.resize(img, dst, new Size(640, 480));
+                bq.offer(toBufferedImage(dst));
+            }
+            else{loaded=false;}
+        }
+    }
+
     public VideoCap(BlockingQueue queue) {
         bq = queue;
         cap = new VideoCapture();
-        openFromFile();
         System.out.println(cap.get(CV_CAP_PROP_FRAME_WIDTH) + " " + cap.get(CV_CAP_PROP_FRAME_HEIGHT));
         System.out.println("Camera status: " + cap.isOpened());
     }
@@ -46,19 +61,7 @@ public class VideoCap implements Runnable {
         cap.open(0);
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            if (cap.read(img)) {
-                Mat dst = new Mat();
-                Imgproc.resize(img, dst, new Size(320, 240));
-                bq.offer(toBufferedImage(dst));
-            }
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-            }
-        }
+    public void taskRun() {
 
     }
 
@@ -78,5 +81,22 @@ public class VideoCap implements Runnable {
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
+    }
+
+    public void startVideo() {
+        if (!start) {
+            start = true;
+            if (!cap.grab()) {
+            openFromFile();
+//                openCamera();
+            loaded=true;
+            }
+        }
+    }
+
+    public void stopVideo() {
+        if (start) {
+            start = false;
+        }
     }
 }
