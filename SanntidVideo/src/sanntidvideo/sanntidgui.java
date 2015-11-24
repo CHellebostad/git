@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Timer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -11,18 +13,39 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import org.opencv.core.Mat;
-
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiUnavailableException;
 /*
  *
  * @author Charlotte
- * 
+ *
  */
+
 public class sanntidgui extends javax.swing.JFrame {
 
+    static Object gui;
     public boolean isRunning;
     public Mat mat;
     private Main main;
     private final BlockingQueue videoQueue = new ArrayBlockingQueue(1, true);
+    int nNoteNumber = 0;	// MIDI key number
+    int nVelocity = 127;
+    private static MidiChannel[] channels;
+    int channel = 1;
+    boolean aPressed, wPressed, sPressed, ePressed, dPressed, fPressed, tPressed, gPressed, yPressed, hPressed, uPressed, jPressed = false;
+
+    static {
+        try {
+            Synthesizer synth = MidiSystem.getSynthesizer();
+            synth.open();
+            channels = synth.getChannels();
+        } catch (MidiUnavailableException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
 
     //JPanel jPanel_image;
     /**
@@ -50,35 +73,27 @@ public class sanntidgui extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
         startButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         startButton1 = new javax.swing.JButton();
         startButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        jTextField0 = new javax.swing.JTextField();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JTextField();
+        jTextField6 = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        Keyboard = new javax.swing.JTable();
         jLabel28 = new javax.swing.JLabel();
-        jLabel_image = new javax.swing.JLabel();
-        jButton_attach = new javax.swing.JButton();
-        jTextField_playing = new javax.swing.JTextField();
-        jTextField_imagepath = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
-            }
-        });
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
             }
         });
 
@@ -112,16 +127,19 @@ public class sanntidgui extends javax.swing.JFrame {
             }
         });
 
+        jTextField0.setText(" ");
+        jTextField0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField0ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.setText("               ");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 23, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(574, 574, 574))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -135,8 +153,22 @@ public class sanntidgui extends javax.swing.JFrame {
                         .addComponent(startButton1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1025, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1025, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel2)
+                                .addGap(35, 35, 35)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField5)
+                                    .addComponent(jTextField3)
+                                    .addComponent(jTextField0, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                                    .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.LEADING))))))
+                .addContainerGap(390, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -147,12 +179,22 @@ public class sanntidgui extends javax.swing.JFrame {
                     .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
+                .addGap(7, 7, 7)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 841, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField0, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -164,58 +206,22 @@ public class sanntidgui extends javax.swing.JFrame {
             }
         });
 
-        Keyboard.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Tast", "A", "W", "S", "E", "D", "F", "T", "G", "Y", "H", "U", "J"}
-            },
-            new String [] {
-                "Note", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        Keyboard.setName("Keyboard"); // NOI18N
-        jScrollPane1.setViewportView(Keyboard);
-
-        jLabel28.setText("Keyboard:");
-
-        jLabel_image.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel_image.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        jButton_attach.setText("Browse");
-        jButton_attach.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.setText("Press to play");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_attachActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
-
-        jTextField_playing.setText("Play: ");
-        jTextField_playing.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_playingActionPerformed(evt);
-            }
-        });
-        jTextField_playing.addKeyListener(new java.awt.event.KeyAdapter() {
+        jButton1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextField_playingKeyPressed(evt);
+                jButton1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jButton1KeyReleased(evt);
             }
         });
 
-        jTextField_imagepath.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_imagepathActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Velg bilde for analysering:");
-
-        jLabel3.setText("Analysert:");
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sanntidvideo/PIANO.jpg"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -223,47 +229,25 @@ public class sanntidgui extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(113, 113, 113)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_playing, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel3)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField2)
-                            .addComponent(jLabel_image, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
-                        .addGap(34, 34, 34)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton_attach, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField_imagepath, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(0, 290, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(0, 817, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jTextField_playing, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(275, 275, 275)
-                        .addComponent(jButton_attach, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_imagepath, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(jLabel1)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel_image, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(1, 1, 1)
                 .addComponent(jLabel3)
-                .addGap(8, 8, 8)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(116, Short.MAX_VALUE))
+                .addGap(93, 93, 93)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(524, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Manuell", jPanel2);
@@ -276,92 +260,24 @@ public class sanntidgui extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1102, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton_attachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_attachActionPerformed
-// TODO add your handling code here:
-        JFileChooser chooser = new JFileChooser();
-
-        chooser.showOpenDialog(null);
-        File f = chooser.getSelectedFile();
-        String filename = f.getAbsolutePath();
-        jTextField_imagepath.setText(filename);
-        // jPanel_image.drawImage(image,0,0,null);
-        ImageIcon icon = new ImageIcon(filename);
-        jLabel_image.setIcon(icon);
-    }//GEN-LAST:event_jButton_attachActionPerformed
-
-    private void jTextField_playingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_playingActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_playingActionPerformed
-
     private void jPanel2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel2KeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPanel2KeyPressed
 
-    private void jTextField_playingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField_playingKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_A) {
-            //play C
-            System.out.println("A");
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_W) {
-            //play C#
-            System.out.println("W");
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_S) {
-            //play D
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_E) {
-            //play D#
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_D) {
-            //play E
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_F) {
-            //play F
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_T) {
-            //play F#
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_G) {
-            //play G
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_Y) {
-            //play G#
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_H) {
-            //play A
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_U) {
-            //play A#
-        }
-        if (evt.getKeyCode() == KeyEvent.VK_J) {
-            //play H
-        }
-    }//GEN-LAST:event_jTextField_playingKeyPressed
-
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField_imagepathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_imagepathActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_imagepathActionPerformed
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        // TODO add your handling code here: 
+        // TODO add your handling code here:
         if (isRunning == false) {
             isRunning = true;
             start();
             main.startVideo();
         }
-
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
@@ -369,7 +285,6 @@ public class sanntidgui extends javax.swing.JFrame {
             isRunning = false;
             main.stopVideo();
         }
-        
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void startButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButton1ActionPerformed
@@ -384,6 +299,179 @@ public class sanntidgui extends javax.swing.JFrame {
         main.setClosing();
     }//GEN-LAST:event_formWindowClosing
 
+    private void jTextField0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField0ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField0ActionPerformed
+
+    private void jButton1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_A) {
+            //play C
+            nNoteNumber = 48;
+            if (!aPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                aPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_W) {
+            //play C#
+            nNoteNumber = 49;
+            if (!wPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                wPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_S) {
+            //play D
+            nNoteNumber = 50;
+            if (!sPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                sPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_E) {
+            //play D#
+            nNoteNumber = 51;
+            if (!ePressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                ePressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_D) {
+            //play E
+            nNoteNumber = 52;
+            if (!dPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                dPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_F) {
+            //play F
+            nNoteNumber = 53;
+            if (!fPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                fPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_T) {
+            //play F#
+            nNoteNumber = 54;
+            if (!tPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                tPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_G) {
+            //play G
+            nNoteNumber = 55;
+            if (!gPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                gPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_Y) {
+            //play G#
+            nNoteNumber = 56;
+            if (!yPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                yPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_H) {
+            //play A
+            nNoteNumber = 57;
+            if (!hPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                hPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_U) {
+            //play A#
+            nNoteNumber = 58;
+            if (!uPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                uPressed = true;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_J) {
+            //play H
+            nNoteNumber = 59;
+            if (!jPressed) {
+                channels[channel].noteOn(nNoteNumber, nVelocity);
+                jPressed = true;
+            }
+        }
+        // channels[channel].noteOff(nNoteNumber, nVelocity);        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1KeyPressed
+
+    private void jButton1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyReleased
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_A) {
+            //play C
+            aPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_W) {
+            wPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_S) {
+            sPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_E) {
+            ePressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_D) {
+            dPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_F) {
+            fPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_T) {
+            tPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_G) {
+            gPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_Y) {
+            yPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_H) {
+            hPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_U) {
+            uPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_J) {
+            jPressed = true;
+            channels[channel].noteOff(nNoteNumber, nVelocity);
+        }
+        aPressed = false;
+        wPressed = false;
+        sPressed = false;
+        ePressed = false;
+        dPressed = false;
+        fPressed = false;
+        tPressed = false;
+        gPressed = false;
+        yPressed = false;
+        hPressed = false;
+        uPressed = false;
+        jPressed = false;
+    }//GEN-LAST:event_jButton1KeyReleased
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -391,7 +479,7 @@ public class sanntidgui extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -451,28 +539,45 @@ public class sanntidgui extends javax.swing.JFrame {
                 }
                 jLabel4.setIcon(imgIcon);
 
+                // && !main.queue1.isEmpty() && !main.queue2.isEmpty() && !main.queue3.isEmpty() && !main.queue4.isEmpty() && !main.queue5.isEmpty()){
+                if (!main.queue0.isEmpty()) {
+                    jTextField0.setText(main.refTest0);
+                }
+                if (!main.queue1.isEmpty()) {
+                    jTextField1.setText(main.refTest1);
+                }
+                if (!main.queue2.isEmpty()) {
+                    jTextField3.setText(main.refTest2);
+                }
+                if (!main.queue3.isEmpty()) {
+                    jTextField4.setText(main.refTest3);
+                }
+                if (!main.queue4.isEmpty()) {
+                    jTextField5.setText(main.refTest4);
+                }
+                if (!main.queue5.isEmpty()) {
+                    jTextField6.setText(main.refTest5);
+                }
             }
         }
     }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable Keyboard;
-    private javax.swing.JButton jButton_attach;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel_image;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField jTextField0;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField_imagepath;
-    private javax.swing.JTextField jTextField_playing;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     private javax.swing.JButton startButton;
     private javax.swing.JButton startButton1;
     private javax.swing.JButton startButton2;

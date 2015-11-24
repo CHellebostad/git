@@ -12,9 +12,6 @@ import java.util.Arrays;
  */
 public class BildeSplit {
     
-    public BildeSplit(){
-
-    }
     public ArrayList<BufferedImage> Split(BufferedImage orgBilde) throws IOException {
         
         ArrayList<BufferedImage> bilder = new ArrayList<>();

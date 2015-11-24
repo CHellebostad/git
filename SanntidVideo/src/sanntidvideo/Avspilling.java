@@ -82,7 +82,7 @@ public class Avspilling extends TimerTask{
       
         for(int i=0;i<midiCodes.size();i++){
             
-            if (midiCodes.get(i)!= lastMidiCodes.get(i)) {
+            if (!Objects.equals(midiCodes.get(i), lastMidiCodes.get(i))) {
 //                System.out.println("Midicode: " + midiCodes.get(i));
                 midiToStart.add(midiCodes.get(i));
 //                System.out.println("MidiToStart: " + midiToStart.get(i));
